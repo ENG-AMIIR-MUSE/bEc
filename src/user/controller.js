@@ -6,12 +6,13 @@ module.exports = {
   createUser: async (req, res) => {
     try {
       const { name, username, password } = req.body;
-      const photo=req.file.path
-      let correctedPath =process.env.IMAGE_URL + photo.replace(/\\/g, "/");
-      console.log("PHOTO",photo)
-      console.log("password",password)
-      console.log("username",username)
-      console.log("name",name)
+      console.log("carfon");
+      // const photo = req.file.path;
+      // let correctedPath = process.env.IMAGE_URL + photo.replace(/\\/g, "/");
+      // console.log("PHOTO", photo);
+      console.log("password", password);
+      console.log("username", username);
+      console.log("name", name);
       const encryptedPassword = CryptoJS.AES.encrypt(
         password.toString(),
         process.env.PASS_SEC
@@ -20,7 +21,7 @@ module.exports = {
         username: username,
         password: encryptedPassword,
         name: name,
-        photo:correctedPath
+        // photo: correctedPath,
       }).save();
       const token = jwt.sign(
         {
@@ -34,6 +35,7 @@ module.exports = {
         data: { ...user._doc, token },
       });
     } catch (e) {
+      console.log("error", e.toString());
       res.status(400).json({ error: e.message });
     }
   },
@@ -65,30 +67,29 @@ module.exports = {
         { expiresIn: "7d" }
       );
 
-     return res.status(200).json({
+      return res.status(200).json({
         status: "success",
-        data: { ...user._doc,token },
+        data: { ...user._doc, token },
       });
     } catch (e) {
-      return res.status(401).json({error:e.message});
+      return res.status(401).json({ error: e.message });
     }
   },
   getUser: async (req, res) => {
     try {
       const id = req.params.id;
-      console.log("id",id)
+      console.log("id", id);
       const user = await User.findById(id);
       if (!user) {
         return res.status(400).json({ error: "User not found" });
       }
-   
 
-     return res.status(200).json({
+      return res.status(200).json({
         status: "success",
         data: { ...user._doc },
       });
     } catch (e) {
-      return res.status(400).json({error:e.message});
+      return res.status(400).json({ error: e.message });
     }
   },
 };
